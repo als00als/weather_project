@@ -1,0 +1,317 @@
+// 앱의 현재 상태를 저장할 변수
+let currentUnit = "metric"; // 'metric' = 섭씨, 'imperial' = 화씨
+let currentCity = ""; // 현재 검색된 도시
+let recentSearches = []; // 최근 검색어를 담을 배열
+
+
+/* --- 2. DOM 요소 가져오기 --- */
+const cityInput = document.querySelector("#city-input");
+const searchButton = document.querySelector("#search-button");
+const errorMessage = document.querySelector("#error-message");
+
+// 현재 날씨
+const currentWeatherSection = document.querySelector("#current-weather");
+const currentCityElement = document.querySelector("#current-weather h2");
+const weatherIcon = document.querySelector("#weather-icon");
+const temperature = document.querySelector("#temperature");
+const weatherDescription = document.querySelector("#weather-description");
+const humidity = document.querySelector("#humidity");
+const windSpeed = document.querySelector("#wind-speed");
+
+// 5일 예보
+const forecastCardsContainer = document.querySelector("#forecast-cards");
+
+// 단위 전환 버튼
+const unitToggleButton = document.querySelector("#unit-toggle-button");
+
+// 최근 검색어
+const recentSearchList = document.querySelector("#recent-search-list");
+
+
+/* --- 3. 이벤트 리스너 설정 --- */
+searchButton.addEventListener("click", () => {
+    handleSearch();
+});
+
+cityInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        handleSearch();
+    }
+});
+
+// 과제 4 (필수 기능): 단위 전환
+unitToggleButton.addEventListener("click", () => {
+    // 단위 토글
+    currentUnit = currentUnit === "metric" ? "imperial" : "metric";
+    
+    // 버튼 텍스트 변경
+    unitToggleButton.textContent = currentUnit === "metric" 
+        ? "화씨(°F)로 변경" 
+        : "섭씨(°C)로 변경";
+
+    // 현재 도시 날씨 정보가 있으면, 해당 도시의 날씨를 새 단위로 다시 불러오기
+    if (currentCity) {
+        fetchWeatherData(currentCity);
+    }
+});
+
+// 페이지 로드 시 최근 검색어 불러오기
+document.addEventListener("DOMContentLoaded", () => {
+    loadRecentSearches();
+    renderRecentSearches();
+});
+
+
+/* --- 4. 함수 정의 --- */
+
+/**
+ * 검색 버튼 클릭 또는 Enter 시 호출되는 함수
+ */
+function handleSearch() {
+    const city = cityInput.value.trim();
+    if (city) {
+        fetchWeatherData(city);
+        cityInput.value = ""; // 검색 후 입력창 비우기
+    } else {
+        showError("도시 이름을 입력하세요.");
+    }
+}
+
+/**
+ * 주 기능: 도시 이름으로 현재 날씨와 예보 데이터를 가져옵니다.
+ */
+async function fetchWeatherData(city) {
+    hideError();
+    
+    // API URL에 현재 단위(currentUnit) 적용
+    const currentWeatherUrl = `/api/weather?city=${city}&unit=${currentUnit}`;
+
+    try {
+        const response = await fetch(currentWeatherUrl);
+        if (!response.ok) {
+            throw new Error("도시를 찾을 수 없습니다. (예: seoul)");
+        }
+        const data = await response.json();
+
+        // 1. 현재 날씨 표시
+        displayWeather(data);
+
+        // 2. 5일 예보 데이터 가져오기 (단위 포함)
+        await fetchForecastData(city, currentUnit);
+
+        // 3. (중요) 성공적으로 검색된 도시 이름을 'currentCity'에 저장
+        currentCity = data.name; 
+
+        // 4. (중요) 성공 시 최근 검색어에 저장
+        saveSearch(data.name);
+
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+/**
+ * 5일 예보 데이터를 가져옵니다.
+ */
+async function fetchForecastData(city, unit) {
+    const forecastUrl = `/api/forecast?city=${city}&unit=${unit}`;
+
+    try {
+        const response = await fetch(forecastUrl);
+        if (!response.ok) {
+            throw new Error("예보 데이터를 가져오는 데 실패했습니다.");
+        }
+        const data = await response.json();
+        displayForecast(data.list);
+    } catch (error) {
+        handleError(error); // 예보 오류는 개별적으로 처리
+        console.error("예보 오류:", error);
+    }
+}
+
+/**
+ * 받아온 현재 날씨 데이터를 DOM에 표시합니다.
+ */
+function displayWeather(data) {
+    const unitSymbol = currentUnit === "metric" ? "°C" : "°F";
+    const windUnit = currentUnit === "metric" ? "m/s" : "mph";
+    
+    // (수정) 날씨 메인 상태 (Clear, Clouds 등)
+    const weatherMain = data.weather[0].main;
+
+    currentCityElement.textContent = `현재 날씨 (${data.name})`;
+    temperature.textContent = `${Math.round(data.main.temp)}${unitSymbol}`;
+    weatherDescription.textContent = data.weather[0].description;
+    humidity.textContent = data.main.humidity;
+    windSpeed.textContent = data.wind.speed;
+
+    const windSpeedSpan = windSpeed.nextElementSibling;
+    if (!windSpeedSpan) {
+        windSpeed.insertAdjacentHTML('afterend', `<span id="wind-unit"> ${windUnit}</span>`);
+    } else {
+        windSpeedSpan.textContent = ` ${windUnit}`;
+    }
+
+    // (수정) OpenWeatherMap 아이콘 대신 로컬 아이콘 경로 사용
+    // const iconCode = data.weather[0].icon; (기존 코드)
+    // weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`; (기존 코드)
+    weatherIcon.src = getWeatherIconPath(weatherMain); // (새 코드)
+    weatherIcon.alt = data.weather[0].description;
+
+    currentWeatherSection.style.display = "block";
+    
+}
+
+/**
+ * 5일 예보 데이터를 DOM에 표시합니다.
+ */
+function displayForecast(forecastList) {
+    forecastCardsContainer.innerHTML = "";
+    const unitSymbol = currentUnit === "metric" ? "°C" : "°F";
+
+    const dailyForecasts = forecastList.filter(item => 
+        item.dt_txt.includes("12:00:00")
+    );
+
+    let forecastsToShow = dailyForecasts;
+    if (dailyForecasts.length === 0) {
+        forecastsToShow = forecastList.filter((_, index) => index % 8 === 0);
+    }
+    
+    forecastsToShow = forecastsToShow.slice(0, 5);
+
+    forecastsToShow.forEach(forecast => {
+        const date = new Date(forecast.dt * 1000);
+        const formattedDate = `${date.getMonth() + 1}월 ${date.getDate()}일`;
+        const temp = Math.round(forecast.main.temp);
+        
+        // (수정) 날씨 메인 상태 (Clear, Clouds 등)
+        const weatherMain = forecast.weather[0].main;
+        // (수정) 로컬 아이콘 경로 가져오기
+        const iconPath = getWeatherIconPath(weatherMain);
+
+        // const iconCode = forecast.weather[0].icon; (기존 코드)
+
+        const cardHTML = `
+            <div class="forecast-card-item">
+                <div class="date">${formattedDate}</div>
+                
+                <img src="${iconPath}" alt="${forecast.weather[0].description}">
+                
+                <div class="temp">${temp}${unitSymbol}</div>
+                <div class="desc">${forecast.weather[0].description}</div>
+            </div>
+        `;
+        forecastCardsContainer.innerHTML += cardHTML;
+    });
+}
+
+/* --- 5. localStorage 관련 함수 --- */
+
+/**
+ * 과제 4 (필수 기능): 최근 검색어 저장 (localStorage)
+ */
+function saveSearch(city) {
+    // 중복 제거 (대소문자 무시)
+    const lowerCaseCity = city.toLowerCase();
+    recentSearches = recentSearches.filter(c => c.toLowerCase() !== lowerCaseCity);
+
+    // 맨 앞에 추가
+    recentSearches.unshift(city);
+
+    // 과제 4: 최대 5개
+    if (recentSearches.length > 5) {
+        recentSearches = recentSearches.slice(0, 5);
+    }
+
+    // localStorage에 저장
+    localStorage.setItem("weatherRecentSearches", JSON.stringify(recentSearches));
+
+    // 화면 렌더링
+    renderRecentSearches();
+}
+
+/**
+ * localStorage에서 최근 검색어 불러오기
+ */
+function loadRecentSearches() {
+    const savedSearches = localStorage.getItem("weatherRecentSearches");
+    if (savedSearches) {
+        recentSearches = JSON.parse(savedSearches);
+    }
+}
+
+/**
+ * 최근 검색어 배열을 기반으로 버튼 리스트 생성
+ * 과제 4 (필수 기능): 페이지 로드 시 버튼 리스트 생성
+ */
+function renderRecentSearches() {
+    recentSearchList.innerHTML = ""; // 기존 버튼 삭제
+    recentSearches.forEach(city => {
+        const button = document.createElement("button");
+        button.textContent = city;
+        
+        // 최근 검색어 버튼 클릭 시 해당 도시 날씨 검색
+        button.addEventListener("click", () => {
+            fetchWeatherData(city);
+        });
+        
+        recentSearchList.appendChild(button);
+    });
+}
+
+
+/* --- 6. 오류 처리 함수 --- */
+
+function handleError(error) {
+    console.error("오류 발생:", error);
+    showError(error.message);
+}
+
+function showError(message) {
+    errorMessage.textContent = message;
+    errorMessage.style.display = "block";
+    currentWeatherSection.style.display = "none";
+    forecastCardsContainer.innerHTML = "";
+}
+
+function hideError() {
+    errorMessage.textContent = "";
+    errorMessage.style.display = "none";
+}
+
+/* --- 7. (추가) 날씨 상태를 로컬 아이콘 경로로 변환하는 함수 --- */
+
+/**
+ * 날씨 상태(weatherMain)를 기반으로
+ * 사용할 로컬 이미지 아이콘의 경로를 반환합니다.
+ */
+function getWeatherIconPath(weatherMain) {
+    // 기본 아이콘 (경로가 없는 경우 대비)
+    let iconPath = "./image/cloudy.png"; 
+
+    switch (weatherMain) {
+        case "Clear":
+            iconPath = "./image/sunny.png";
+            break;
+        case "Clouds":
+            iconPath = "./image/cloudy.png";
+            break;
+        case "Rain":
+        case "Drizzle":
+            iconPath = "./image/rainy.png";
+            break;
+        case "Snow":
+            iconPath = "./image/snowy.png";
+            break;
+        case "Mist":
+        case "Fog":
+        case "Haze":
+            iconPath = "./image/misty.png";
+            break;
+        default:
+            // 기타 (기본값인 cloudy.png 사용)
+            break;
+    }
+    return iconPath;
+}
