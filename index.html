@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 날씨예보 웹사이트</title>
+    <link rel="stylesheet" href="style.css">
+    </head>
+<body>
+
+    <div class="weather-container">
+        <header>
+            <h1>나만의 날씨예보</h1>
+            <div class="logos">
+                <img src="./image/html_logo.png" alt="HTML">
+                <img src="./image/css_logo.png" alt="CSS">
+                <img src="./image/js_logo.png" alt="JS">
+            </div>
+        </header>
+
+        <main>
+            <div class="search-box">
+                <input type="text" id="city-input" placeholder="도시 이름을 영어로 입력하세요">
+                <button id="search-button">검색</button>
+            </div>
+
+            <div class="recent-searches">
+                <h3>최근 검색:</h3>
+                <div id="recent-search-list">
+                    </div>
+            </div>
+
+            <div id="error-message" class="error"></div>
+
+            <section id="current-weather" class="weather-card">
+                <h2>현재 날씨 (도시명)</h2>
+                <div class="weather-details">
+                    <img id="weather-icon" src="./image/sunny.png" alt="날씨 아이콘">
+                    <div id="temperature">--°C</div>
+                    <div id="weather-description">날씨 정보 로딩 중...</div>
+                </div>
+                <div class="additional-info">
+                    <div>습도: <span id="humidity">--</span>%</div>
+                    <div>풍속: <span id="wind-speed">--</span> m/s</div>
+                </div>
+                <button id="unit-toggle-button">화씨(°F)로 변경</button>
+            </section>
+            
+            <section id="forecast">
+                <h2>5일간 예보</h2>
+                <div id="forecast-cards" class="forecast-container">
+                    </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Made by [Your Name] - My Unique Weather Site</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
