@@ -12,7 +12,11 @@ export default async function handler(request, response) {
     const unit = searchParams.get('unit') || 'metric';
 
     if (!city) {
-        return response.status(400).json({ error: 'City is required' });
+        // Netlify Functions 형식으로 응답 반환
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'City is required' }),
+        };
     }
 
     const CURRENT_WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather";
@@ -23,15 +27,28 @@ export default async function handler(request, response) {
         const fetchResponse = await fetch(apiUrl);
         const data = await fetchResponse.json();
 
-        // 4. API 오류를 클라이언트에 전달
+        // 4. API 오류를 클라이언트에 전달 (Netlify Functions 형식으로 변경)
         if (!fetchResponse.ok) {
-            return response.status(fetchResponse.status).json(data);
+            return {
+                statusCode: fetchResponse.status, // 상태 코드 사용
+                body: JSON.stringify(data),      // JSON 본문을 문자열로 변환
+            };
         }
 
-        // 5. 성공 시, 클라이언트에 날씨 데이터 반환
-        return response.status(200).json(data);
+        // 5. 성공 시, 클라이언트에 날씨 데이터 반환 (Netlify Functions 형식으로 변경)
+        return {
+            statusCode: 200,
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
 
     } catch (error) {
-        return response.status(500).json({ error: 'Failed to fetch weather data' });
+        // 서버 오류 처리
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Failed to fetch weather data' }),
+        };
     }
 }

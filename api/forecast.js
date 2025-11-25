@@ -8,23 +8,42 @@ export default async function handler(request, response) {
     const unit = searchParams.get('unit') || 'metric';
 
     if (!city) {
-        return response.status(400).json({ error: 'City is required' });
+        // Netlify Functions 형식으로 400 에러 응답 반환
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'City is required' }),
+        };
     }
 
     const FORECAST_API_URL = "https://api.openweathermap.org/data/2.5/forecast";
     const apiUrl = `${FORECAST_API_URL}?q=${city}&appid=${API_KEY}&units=${unit}&lang=kr`;
 
     try {
-        const fetchResponse = await fetch(apiUrl);
-        const data = await fetchResponse.json();
-
+        
+        // OpenWeatherMap API 오류 처리
         if (!fetchResponse.ok) {
-            return response.status(fetchResponse.status).json(data);
+            // Netlify Functions 형식으로 API 응답 상태 코드 및 본문 전달
+            return {
+                statusCode: fetchResponse.status,
+                body: JSON.stringify(data),
+            };
         }
 
-        return response.status(200).json(data);
+        // 성공 시, 클라이언트에 예보 데이터 반환
+        return {
+            statusCode: 200,
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
 
     } catch (error) {
-        return response.status(500).json({ error: 'Failed to fetch forecast data' });
+        // 서버 내부 오류 처리
+        console.error("Forecast function error:", error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Failed to fetch forecast data' }),
+        };
     }
 }
