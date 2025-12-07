@@ -167,10 +167,11 @@ async function fetchWeatherData(city) {
 
         // 1. 현재 날씨 표시
         displayWeather(data);
-
+        
         fetchAirQuality(data.coord.lat, data.coord.lon);
 
-        showWeatherAdvice(data);
+        const aqi = await fetchAirQuality(data.coord.lat, data.coord.lon); 
+        showWeatherAdvice(data, aqi);
 
         // 2. 5일 예보 데이터 가져오기 (단위 포함)
         await fetchForecastData(city, currentUnit);
@@ -528,44 +529,47 @@ function renderDiaryList() {
     
 }
 
-function showWeatherAdvice(data) {
-        const weatherMain = data.weather[0].main; // 날씨 상태 (Rain, Clear 등)
-        const temp = data.main.temp; // 현재 온도
-        const windSpeed = data.wind.speed; // 풍속
+function showWeatherAdvice(data, aqi) { 
+    const weatherMain = data.weather[0].main;
+    const temp = data.main.temp;
+    const windSpeed = data.wind.speed;
 
-        let message = "오늘도 좋은 하루 보내세요! 😊"; // 기본 메시지
+    let message = "오늘도 좋은 하루 보내세요! 😊";
 
-        // --- 조건별 메시지 설정 (우선순위 순서대로 배치) ---
-        
-        // 1. 비/눈이 올 때 (가장 중요)
-        if (weatherMain === "Rain" || weatherMain === "Drizzle" || weatherMain === "Thunderstorm") {
-            message = "비가 오네요 ☔ 우산을 꼭 챙기세요!";
-        } else if (weatherMain === "Snow") {
-            message = "눈이 와요 ☃️ 미끄러지지 않게 조심하세요!";
-        } 
-        // 2. 미세먼지/황사 (OpenWeatherMap에서는 Dust, Sand, Ash 등으로 표시됨)
-        else if (["Dust", "Sand", "Ash", "Haze", "Smoke"].includes(weatherMain)) {
-            message = "공기가 탁해요 😷 마스크를 착용하세요!";
-        }
-        // 3. 춥거나 바람이 많이 불 때
-        else if (temp <= 10 || windSpeed >= 5) { // 10도 이하이거나 풍속 5m/s 이상
-            message = "날씨가 쌀쌀해요 🧥 따뜻하게 입으세요!";
-        }
-        // 4. 아주 더울 때 (30도 이상)
-        else if (temp >= 30) {
-            message = "너무 더워요 ☀️ 물을 자주 마시세요!";
-        }
-        // 5. 날씨가 아주 좋을 때
-        else if (weatherMain === "Clear") {
-            message = "하늘이 맑아요 ☀️ 기분 좋은 하루 되세요!";
-        }
+    // --- 조건별 메시지 설정 ---
+    
+    // 1. 비/눈이 올 때 (최우선)
+    if (weatherMain === "Rain" || weatherMain === "Drizzle" || weatherMain === "Thunderstorm") {
+        message = "비가 오네요 ☔ 우산을 꼭 챙기세요!";
+    } else if (weatherMain === "Snow") {
+        message = "눈이 와요 ☃️ 미끄러지지 않게 조심하세요!";
+    } 
+    // 2. ▼▼▼ [추가] 미세먼지가 나쁨(4) 또는 매우 나쁨(5)일 때 ▼▼▼
+    else if (aqi >= 4) {
+        message = "미세먼지가 심해요 😷 마스크를 꼭 챙기세요!";
+    }
+    // 3. 기존 미세먼지 날씨 코드 (Dust, Sand 등)
+    else if (["Dust", "Sand", "Ash", "Haze", "Smoke"].includes(weatherMain)) {
+        message = "공기가 탁해요 😷 마스크를 착용하세요!";
+    }
+    // 4. 춥거나 바람
+    else if (temp <= 10 || windSpeed >= 5) {
+        message = "날씨가 쌀쌀해요 🧥 따뜻하게 입으세요!";
+    }
+    // 5. 더위
+    else if (temp >= 30) {
+        message = "너무 더워요 ☀️ 물을 자주 마시세요!";
+    }
+    // 6. 맑음
+    else if (weatherMain === "Clear") {
+        message = "하늘이 맑아요 ☀️ 기분 좋은 하루 되세요!";
+    }
 
-        // 팝업에 텍스트 넣고 보여주기
-        adviceText.textContent = message;
-        advicePopup.classList.add("show");
-
-        // (선택 사항) 5초 뒤에 자동으로 사라지게 하려면 아래 주석 해제
-        setTimeout(() => { advicePopup.classList.remove("show"); }, 7000);
+    adviceText.textContent = message;
+    advicePopup.classList.add("show");
+    
+    // 7초 뒤 사라짐
+    setTimeout(() => { advicePopup.classList.remove("show"); }, 7000);
 }
 
 async function fetchWeatherDataByCoords(lat, lon) {
@@ -583,7 +587,8 @@ async function fetchWeatherDataByCoords(lat, lon) {
 
         displayWeather(data);
         fetchAirQuality(lat, lon);
-        showWeatherAdvice(data);
+        const aqi = await fetchAirQuality(lat, lon);
+        showWeatherAdvice(data, aqi);
         
         // 중요: 도시 이름을 currentCity에 업데이트 (그래야 단위 변환 등이 잘 됨)
         currentCity = data.name; 
@@ -625,6 +630,8 @@ async function fetchAirQuality(lat, lon) {
         airQualityElement.textContent = aqiText;
         airQualityElement.style.color = color;
         airQualityElement.style.fontWeight = "bold";
+
+        return aqi;
 
     } catch (error) {
         console.error(error);
