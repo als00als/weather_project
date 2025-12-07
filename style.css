@@ -129,8 +129,10 @@ main {
 }
 
 #weather-description {
-    font-size: 1.1rem;
-    justify-content: center;
+    font-size: 1.2rem;
+    text-align: center; /* 텍스트를 가운데로 정렬 */
+    margin: 10px 0;     /* 위아래 간격을 조금 줌 */
+    text-transform: capitalize;
 }
 
 .additional-info {

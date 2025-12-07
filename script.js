@@ -41,6 +41,14 @@ const recentSearchList = document.querySelector("#recent-search-list");
 const locationButton = document.querySelector("#location-button");
 
 /* --- 3. 이벤트 리스너 설정 --- */
+searchButton.addEventListener("click", handleSearch);
+
+cityInput.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+        handleSearch();
+    }
+});
+
 // 내 위치 버튼 클릭 이벤트
 locationButton.addEventListener("click", () => {
     // 브라우저가 위치 정보를 지원하는지 확인
