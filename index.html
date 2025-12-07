@@ -56,8 +56,20 @@
                 <h2>오늘의 날씨 일기 ✏️</h2>
                 <div class="date-display" id="diary-date"></div>
                 <textarea id="diary-input" placeholder="오늘 날씨는 어땠나요? 기분이나 옷차림을 기록해보세요."></textarea>
-                <button id="save-diary-button">일기 저장하기</button>
+    
+                <div class="diary-buttons">
+                    <button id="save-diary-button">일기 저장하기</button>
+                    <button id="view-diary-button" class="secondary-btn">일기 모아보기</button>
+                </div>
             </section>
+
+            <div id="diary-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>📅 지난 일기 목록</h2>
+                    <div id="diary-list-container"></div>
+                </div>
+            </div>
         </main>
 
         <footer>

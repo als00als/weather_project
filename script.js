@@ -11,7 +11,10 @@ const errorMessage = document.querySelector("#error-message");
 const diaryInput = document.querySelector("#diary-input");
 const saveDiaryButton = document.querySelector("#save-diary-button");
 const diaryDateElement = document.querySelector("#diary-date");
-
+const viewDiaryButton = document.querySelector("#view-diary-button");
+const diaryModal = document.querySelector("#diary-modal");
+const closeModalButton = document.querySelector(".close-modal");
+const diaryListContainer = document.querySelector("#diary-list-container");
 
 // 현재 날씨
 const currentWeatherSection = document.querySelector("#current-weather");
@@ -40,6 +43,24 @@ searchButton.addEventListener("click", () => {
 cityInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
         handleSearch();
+    }
+});
+
+// 1. '일기 모아보기' 버튼 클릭 시 모달 열기
+viewDiaryButton.addEventListener("click", () => {
+    renderDiaryList(); // 목록 그리기 함수 호출
+    diaryModal.style.display = "block"; // 모달 보이기
+});
+
+// 2. 'X' 버튼 클릭 시 모달 닫기
+closeModalButton.addEventListener("click", () => {
+    diaryModal.style.display = "none";
+});
+
+// 3. 모달 바깥 배경 클릭 시 닫기
+window.addEventListener("click", (event) => {
+    if (event.target === diaryModal) {
+        diaryModal.style.display = "none";
     }
 });
 
@@ -384,4 +405,36 @@ function getTodayKey() {
     const month = date.getMonth() + 1;
     const day = date.getDate();
     return `diary-${year}-${month}-${day}`;
+}
+
+/**
+ * 저장된 모든 일기를 불러와 모달창 목록에 표시합니다.
+ */
+function renderDiaryList() {
+    diaryListContainer.innerHTML = ""; // 목록 초기화
+
+    // localStorage의 모든 키를 가져옴
+    const keys = Object.keys(localStorage);
+    
+    // 'diary-'로 시작하는 키만 필터링하고, 날짜 내림차순(최신순) 정렬
+    const diaryKeys = keys.filter(key => key.startsWith("diary-")).sort().reverse();
+
+    if (diaryKeys.length === 0) {
+        diaryListContainer.innerHTML = "<div class='no-diary'>저장된 일기가 없습니다.</div>";
+        return;
+    }
+
+    // 각 일기를 HTML로 만들어서 추가
+    diaryKeys.forEach(key => {
+        const content = localStorage.getItem(key);
+        const dateStr = key.replace("diary-", ""); // 'diary-2023-12-07' -> '2023-12-07'
+        
+        const entryDiv = document.createElement("div");
+        entryDiv.className = "diary-entry";
+        entryDiv.innerHTML = `
+            <h4>📅 ${dateStr}</h4>
+            <p>${content}</p>
+        `;
+        diaryListContainer.appendChild(entryDiv);
+    });
 }

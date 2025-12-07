@@ -265,3 +265,81 @@ footer {
 #save-diary-button:hover {
     background-color: #218838;
 }
+
+/* --- 버튼 그룹 --- */
+.diary-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* 버튼 사이 간격 */
+}
+
+/* '일기 모아보기' 버튼 스타일 (파란색) */
+.secondary-btn {
+    padding: 10px 25px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+.secondary-btn:hover {
+    background-color: #0056b3;
+}
+
+/* --- 모달창 (팝업) 스타일 --- */
+.modal {
+    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    z-index: 1000; /* 맨 위에 뜨게 함 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은 배경 */
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto; /* 화면 중앙 배치 */
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px; /* 최대 너비 제한 */
+    max-height: 70vh; /* 너무 길어지면 스크롤 */
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.close-modal:hover {
+    color: black;
+}
+
+/* --- 모달 내부 일기 리스트 --- */
+.diary-entry {
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+    text-align: left;
+}
+.diary-entry h4 {
+    margin-bottom: 5px;
+    color: #007bff;
+}
+.diary-entry p {
+    white-space: pre-wrap; /* 줄바꿈 유지 */
+    color: #555;
+}
+.no-diary {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+}
