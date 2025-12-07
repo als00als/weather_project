@@ -496,10 +496,12 @@ function renderDiaryList() {
         btnGroup.appendChild(deleteBtn);
 
         diaryListContainer.appendChild(entryDiv);
-        
-    });
 
-    function showWeatherAdvice(data) {
+    });
+    
+}
+
+function showWeatherAdvice(data) {
         const weatherMain = data.weather[0].main; // 날씨 상태 (Rain, Clear 등)
         const temp = data.main.temp; // 현재 온도
         const windSpeed = data.wind.speed; // 풍속
@@ -537,5 +539,4 @@ function renderDiaryList() {
 
         // (선택 사항) 5초 뒤에 자동으로 사라지게 하려면 아래 주석 해제
         // setTimeout(() => { advicePopup.classList.remove("show"); }, 5000);
-        }    
 }
