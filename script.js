@@ -180,7 +180,7 @@ function displayWeather(data) {
     // (수정) 날씨 메인 상태 (Clear, Clouds 등)
     const weatherMain = data.weather[0].main;
 
-    currentCityElement.textContent = `현재 날씨 (${data.name})`;
+    currentCityElement.textContent = `${data.name}`;
     temperature.textContent = `${Math.round(data.main.temp)}${unitSymbol}`;
     weatherDescription.textContent = refineDescription(data.weather[0].description);
     humidity.textContent = data.main.humidity;
