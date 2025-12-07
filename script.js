@@ -40,6 +40,8 @@ const recentSearchList = document.querySelector("#recent-search-list");
 
 const locationButton = document.querySelector("#location-button");
 
+const airQualityElement = document.querySelector("#air-quality");
+
 /* --- 3. 이벤트 리스너 설정 --- */
 searchButton.addEventListener("click", handleSearch);
 
@@ -163,6 +165,8 @@ async function fetchWeatherData(city) {
 
         // 1. 현재 날씨 표시
         displayWeather(data);
+
+        fetchAirQuality(data.coord.lat, data.coord.lon);
 
         showWeatherAdvice(data);
 
@@ -575,6 +579,7 @@ async function fetchWeatherDataByCoords(lat, lon) {
         const data = await response.json();
 
         displayWeather(data);
+        fetchAirQuality(lat, lon);
         showWeatherAdvice(data);
         
         // 중요: 도시 이름을 currentCity에 업데이트 (그래야 단위 변환 등이 잘 됨)
@@ -588,5 +593,38 @@ async function fetchWeatherDataByCoords(lat, lon) {
 
     } catch (error) {
         handleError(error);
+    }
+}
+
+async function fetchAirQuality(lat, lon) {
+    const airUrl = `/api/air?lat=${lat}&lon=${lon}`;
+
+    try {
+        const response = await fetch(airUrl);
+        if (!response.ok) throw new Error("대기질 정보를 가져올 수 없습니다.");
+        
+        const data = await response.json();
+        const aqi = data.list[0].main.aqi; // AQI 지수 (1: 좋음 ~ 5: 매우 나쁨)
+        
+        // AQI 숫자를 한국어 텍스트로 변환
+        let aqiText = "";
+        let color = "";
+
+        switch (aqi) {
+            case 1: aqiText = "좋음 🔵"; color = "blue"; break;
+            case 2: aqiText = "보통 🟢"; color = "green"; break;
+            case 3: aqiText = "주의 🟡"; color = "#d4a017"; break; // 진한 노랑
+            case 4: aqiText = "나쁨 🟠"; color = "orange"; break;
+            case 5: aqiText = "매우 나쁨 🔴"; color = "red"; break;
+            default: aqiText = "정보 없음"; color = "gray";
+        }
+
+        airQualityElement.textContent = aqiText;
+        airQualityElement.style.color = color;
+        airQualityElement.style.fontWeight = "bold";
+
+    } catch (error) {
+        console.error(error);
+        airQualityElement.textContent = "--";
     }
 }

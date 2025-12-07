@@ -27,8 +27,7 @@
 
             <div class="recent-searches">
                 <h3>최근 검색</h3>
-                <div id="recent-search-list">
-                    </div>
+                <div id="recent-search-list"></div>
             </div>
 
             <div id="error-message" class="error"></div>
@@ -41,8 +40,9 @@
                 </div>
                 <div id="weather-description"></div>
                 <div class="additional-info">
-                    <div>습도: <span id="humidity">--</span>%</div>
-                    <div>풍속: <span id="wind-speed">--</span></div>
+                    <div><span id="humidity"></span></div>
+                    <div><span id="wind-speed"></span></div>
+                    <div><span id="air-quality"></span></div>
                 </div>
                 <button id="unit-toggle-button">화씨(°F)로 변경</button>
             </section>
@@ -53,7 +53,7 @@
             </section>
 
             <section id="diary-section" class="weather-card">
-                <h2>오늘의 날씨 일기 ✏️</h2>
+                <h2>오늘의 일기</h2>
                 <div class="date-display" id="diary-date"></div>
                 <textarea id="diary-input" placeholder="오늘 날씨는 어땠나요? 기분이나 옷차림을 기록해보세요."></textarea>
     
@@ -66,7 +66,7 @@
             <div id="diary-modal" class="modal">
                 <div class="modal-content">
                     <span class="close-modal">&times;</span>
-                    <h2>📅 지난 일기 목록</h2>
+                    <h2>지난 일기</h2>
                     <div id="diary-list-container"></div>
                 </div>
             </div>

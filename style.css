@@ -459,10 +459,11 @@ footer {
     background-color: #6c757d; /* 회색 계열 */
     color: white;
     cursor: pointer;
-    border-radius: 4px; /* 살짝 둥글게 */
+    border-radius: 5px; /* 살짝 둥글게 */
     font-size: 0.9rem;
     margin-left: 5px; /* 검색 버튼과 살짝 띄우기 */
     transition: background 0.3s;
+    font-weight: bold;
 }
 
 #location-button:hover {
