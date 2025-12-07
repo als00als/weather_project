@@ -2,6 +2,7 @@
 let currentUnit = "metric"; // 'metric' = 섭씨, 'imperial' = 화씨
 let currentCity = ""; // 현재 검색된 도시
 let recentSearches = []; // 최근 검색어를 담을 배열
+let activeDiaryKey = null; // 현재 작성/수정 중인 날짜 키를 기억하는 변수
 
 
 /* --- 2. DOM 요소 가져오기 --- */
@@ -90,7 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loadRecentSearches();
     renderRecentSearches();
 
-    loadDiary();
+    activeDiaryKey = getTodayKey(); 
+    loadDiary(activeDiaryKey);
 });
 
 
@@ -367,14 +369,14 @@ function refineDescription(description) {
  * 오늘의 날짜를 키(Key)로 사용하여 일기를 저장합니다.
  */
 function saveDiary() {
-    const todayKey = getTodayKey(); // 오늘 날짜 키 생성 (예: diary-2023-10-25)
+    const key = activeDiaryKey || getTodayKey(); 
+    
     const content = diaryInput.value;
     
-    // 내용이 있으면 저장, 비었으면 삭제
     if (content.trim()) {
-        localStorage.setItem(todayKey, content);
+        localStorage.setItem(key, content);
     } else {
-        localStorage.removeItem(todayKey);
+        localStorage.removeItem(key);
     }
 }
 
@@ -382,16 +384,20 @@ function saveDiary() {
  * 저장된 일기가 있다면 불러와서 화면에 보여줍니다.
  */
 function loadDiary() {
-    const todayKey = getTodayKey();
-    const savedContent = localStorage.getItem(todayKey);
+    // 키가 전달되지 않았으면 오늘 날짜 사용
+    const targetKey = key || getTodayKey(); 
+    const savedContent = localStorage.getItem(targetKey);
     
-    // 날짜 표시
-    const today = new Date();
-    diaryDateElement.textContent = `${today.getMonth() + 1}월 ${today.getDate()}일의 기록`;
+    // 날짜 표시 업데이트
+    // 키에서 날짜 부분만 잘라내서 보여주기 (예: diary-2023-12-07 -> 2023-12-07)
+    const dateDisplay = targetKey.replace("diary-", "");
+    diaryDateElement.textContent = `${dateDisplay}의 기록`;
 
-    // 저장된 내용이 있으면 입력창에 채워넣기
+    // 내용 채우기
     if (savedContent) {
         diaryInput.value = savedContent;
+    } else {
+        diaryInput.value = ""; // 내용 없으면 비우기
     }
 }
 
@@ -413,10 +419,8 @@ function getTodayKey() {
 function renderDiaryList() {
     diaryListContainer.innerHTML = ""; // 목록 초기화
 
-    // localStorage의 모든 키를 가져옴
+    // localStorage 키 가져오기 및 정렬
     const keys = Object.keys(localStorage);
-    
-    // 'diary-'로 시작하는 키만 필터링하고, 날짜 내림차순(최신순) 정렬
     const diaryKeys = keys.filter(key => key.startsWith("diary-")).sort().reverse();
 
     if (diaryKeys.length === 0) {
@@ -424,17 +428,58 @@ function renderDiaryList() {
         return;
     }
 
-    // 각 일기를 HTML로 만들어서 추가
     diaryKeys.forEach(key => {
         const content = localStorage.getItem(key);
-        const dateStr = key.replace("diary-", ""); // 'diary-2023-12-07' -> '2023-12-07'
-        
+        const dateStr = key.replace("diary-", ""); // 날짜 문자열 추출
+
+        // 1. 리스트 아이템 생성
         const entryDiv = document.createElement("div");
         entryDiv.className = "diary-entry";
+
+        // 2. 내용 부분 (HTML 직접 삽입)
         entryDiv.innerHTML = `
-            <h4>📅 ${dateStr}</h4>
-            <p>${content}</p>
+            <div class="diary-text-group">
+                <h4>📅 ${dateStr}</h4>
+                <p>${content}</p>
+            </div>
+            <div class="diary-action-buttons">
+                </div>
         `;
+
+        // 3. 수정 버튼 생성 및 기능 연결
+        const editBtn = document.createElement("button");
+        editBtn.className = "btn-mini btn-edit";
+        editBtn.textContent = "수정";
+        editBtn.onclick = () => {
+            // 수정 모드 진입: 키 변경, 내용 로드, 모달 닫기
+            activeDiaryKey = key; 
+            diaryInput.value = content;
+            diaryDateElement.textContent = `${dateStr}의 기록 (수정 중)`;
+            diaryModal.style.display = "none"; // 모달 닫기
+            diaryInput.focus(); // 입력창으로 포커스 이동
+        };
+
+        // 4. 삭제 버튼 생성 및 기능 연결
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn-mini btn-delete";
+        deleteBtn.textContent = "삭제";
+        deleteBtn.onclick = () => {
+            if (confirm(`${dateStr} 일기를 정말 삭제하시겠습니까?`)) {
+                localStorage.removeItem(key); // 삭제
+                renderDiaryList(); // 목록 새로고침
+                
+                // 만약 현재 메인 화면에 떠있는 일기를 삭제했다면, 입력창도 비워줌
+                if (activeDiaryKey === key) {
+                    diaryInput.value = "";
+                }
+            }
+        };
+
+        // 5. 버튼들을 div에 붙이기
+        const btnGroup = entryDiv.querySelector(".diary-action-buttons");
+        btnGroup.appendChild(editBtn);
+        btnGroup.appendChild(deleteBtn);
+
         diaryListContainer.appendChild(entryDiv);
     });
 }
