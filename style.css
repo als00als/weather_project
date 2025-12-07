@@ -105,6 +105,7 @@ main {
 
 /* --- 현재 날씨 [cite: 24] --- */
 #current-weather h2 {
+    font-size: 40px;
     margin-bottom: 15px;
     text-align: center;
 }
@@ -129,13 +130,14 @@ main {
 
 #weather-description {
     font-size: 1.2rem;
-    margin-left: 10px;
+    margin-left: 20px;
     text-transform: capitalize; /* 영어 설명 첫 글자 대문자 */
 }
 
 .additional-info {
     display: flex;
-    justify-content: space-around; /* 습도, 풍속 간격 분배 */
+    justify-content: center; /* 아이템들을 중앙으로 모음 */
+    gap: 30px; /* 아이템 사이의 간격 (이 값을 조절하여 간격을 넓히거나 좁히세요) */
     margin-bottom: 20px;
     font-size: 1.1rem;
 }
