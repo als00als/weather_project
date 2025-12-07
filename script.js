@@ -8,6 +8,10 @@ let recentSearches = []; // 최근 검색어를 담을 배열
 const cityInput = document.querySelector("#city-input");
 const searchButton = document.querySelector("#search-button");
 const errorMessage = document.querySelector("#error-message");
+const diaryInput = document.querySelector("#diary-input");
+const saveDiaryButton = document.querySelector("#save-diary-button");
+const diaryDateElement = document.querySelector("#diary-date");
+
 
 // 현재 날씨
 const currentWeatherSection = document.querySelector("#current-weather");
@@ -337,9 +341,6 @@ function refineDescription(description) {
     return dictionary[description] || description;
 }
 
-const diaryInput = document.querySelector("#diary-input");
-const saveDiaryButton = document.querySelector("#save-diary-button");
-const diaryDateElement = document.querySelector("#diary-date");
 
 /**
  * 오늘의 날짜를 키(Key)로 사용하여 일기를 저장합니다.
