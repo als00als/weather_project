@@ -42,6 +42,8 @@ const locationButton = document.querySelector("#location-button");
 
 const airQualityElement = document.querySelector("#air-quality");
 
+const additionalInfoSection = document.querySelector(".additional-info");
+
 /* --- 3. 이벤트 리스너 설정 --- */
 searchButton.addEventListener("click", handleSearch);
 
@@ -233,7 +235,7 @@ function displayWeather(data) {
     weatherIcon.alt = data.weather[0].description;
 
     currentWeatherSection.style.display = "block";
-    
+    additionalInfoSection.style.display = "flex";
 }
 
 /**
@@ -346,6 +348,7 @@ function showError(message) {
     errorMessage.textContent = message;
     errorMessage.style.display = "block";
     currentWeatherSection.style.display = "none";
+    additionalInfoSection.style.display = "none";
     forecastCardsContainer.innerHTML = "";
 }
 

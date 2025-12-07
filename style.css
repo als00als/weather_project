@@ -136,7 +136,7 @@ main {
 }
 
 .additional-info {
-    display: flex;
+    display: none;
     justify-content: center; /* 아이템들을 중앙으로 모음 */
     gap: 30px; /* 아이템 사이의 간격 (이 값을 조절하여 간격을 넓히거나 좁히세요) */
     margin-bottom: 20px;
