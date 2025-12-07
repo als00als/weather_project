@@ -82,8 +82,15 @@ unitToggleButton.addEventListener("click", () => {
 });
 
 saveDiaryButton.addEventListener("click", () => {
+    // 1. 입력창의 공백을 제거한 내용이 비어있는지 확인
+    if (diaryInput.value.trim() === "") {
+        alert("일기를 입력해주세요"); 
+        return; // 저장을 진행하지 않고 여기서 끝냄
+    }
+
+    // 2. 내용이 있을 때만 저장하고 성공 알림 띄움
     saveDiary();
-    alert("일기가 저장되었습니다!"); // 저장 확인 알림
+    alert("일기가 저장되었습니다!");
 });
 
 // 페이지 로드 시 최근 검색어 불러오기
