@@ -114,7 +114,7 @@ main {
     display: flex;
     align-items: center; /* 아이콘과 텍스트 중앙 정렬 */
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
 #weather-icon {
@@ -402,7 +402,7 @@ footer {
 .btn-delete:hover { background-color: #c82333; }
 
 .forecast-card-item .date {
-    font-weight: 900; /* 아주 굵게 */
+    font-style: bold; /* 아주 굵게 */
     font-size: 1.1rem; /* 글자 크기도 살짝 키움 */
     margin-bottom: 5px;
     color: #333;

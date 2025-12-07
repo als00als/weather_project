@@ -167,8 +167,6 @@ async function fetchWeatherData(city) {
 
         // 1. 현재 날씨 표시
         displayWeather(data);
-        
-        fetchAirQuality(data.coord.lat, data.coord.lon);
 
         const aqi = await fetchAirQuality(data.coord.lat, data.coord.lon); 
         showWeatherAdvice(data, aqi);
@@ -224,9 +222,9 @@ function displayWeather(data) {
 
     const windSpeedSpan = windSpeed.nextElementSibling;
     if (!windSpeedSpan) {
-        windSpeed.insertAdjacentHTML('afterend', `<span id="wind-unit"> ${windUnit}</span>`);
+        windSpeed.insertAdjacentHTML('afterend', `<span id="wind-unit">${windUnit}</span>`);
     } else {
-        windSpeedSpan.textContent = ` ${windUnit}`;
+        windSpeedSpan.textContent = `${windUnit}`;
     }
 
     // (수정) OpenWeatherMap 아이콘 대신 로컬 아이콘 경로 사용
@@ -586,7 +584,6 @@ async function fetchWeatherDataByCoords(lat, lon) {
         const data = await response.json();
 
         displayWeather(data);
-        fetchAirQuality(lat, lon);
         const aqi = await fetchAirQuality(lat, lon);
         showWeatherAdvice(data, aqi);
         
