@@ -454,7 +454,7 @@ function renderDiaryList() {
             // 수정 모드 진입: 키 변경, 내용 로드, 모달 닫기
             activeDiaryKey = key; 
             diaryInput.value = content;
-            diaryDateElement.textContent = `${dateStr}의 기록 (수정 중)`;
+            diaryDateElement.textContent = `${dateStr}의 기록`;
             diaryModal.style.display = "none"; // 모달 닫기
             diaryInput.focus(); // 입력창으로 포커스 이동
         };
