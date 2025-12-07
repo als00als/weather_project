@@ -156,6 +156,10 @@ main {
     color: white;
 }
 
+#forecast {
+    margin-bottom: 20px; /* 위쪽 여백과 동일하게 20px 띄우기 */
+}
+
 /* --- 5일 예보 [cite: 25] --- */
 #forecast h2 {
     text-align: center;
