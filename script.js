@@ -390,13 +390,12 @@ function saveDiary() {
 /**
  * 저장된 일기가 있다면 불러와서 화면에 보여줍니다.
  */
-function loadDiary() {
+function loadDiary(key) {
     // 키가 전달되지 않았으면 오늘 날짜 사용
     const targetKey = key || getTodayKey(); 
     const savedContent = localStorage.getItem(targetKey);
     
     // 날짜 표시 업데이트
-    // 키에서 날짜 부분만 잘라내서 보여주기 (예: diary-2023-12-07 -> 2023-12-07)
     const dateDisplay = targetKey.replace("diary-", "");
     diaryDateElement.textContent = `${dateDisplay}의 기록`;
 
