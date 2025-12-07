@@ -38,15 +38,27 @@ const unitToggleButton = document.querySelector("#unit-toggle-button");
 // 최근 검색어
 const recentSearchList = document.querySelector("#recent-search-list");
 
+const locationButton = document.querySelector("#location-button");
 
 /* --- 3. 이벤트 리스너 설정 --- */
-searchButton.addEventListener("click", () => {
-    handleSearch();
-});
-
-cityInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        handleSearch();
+// 내 위치 버튼 클릭 이벤트
+locationButton.addEventListener("click", () => {
+    // 브라우저가 위치 정보를 지원하는지 확인
+    if (navigator.geolocation) {
+        // 위치 요청 (성공 시 success 함수 실행, 실패 시 error 함수 실행)
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                // 좌표로 날씨 가져오기 함수 호출
+                fetchWeatherDataByCoords(lat, lon);
+            },
+            () => {
+                alert("위치 정보를 가져올 수 없습니다. 권한을 허용했는지 확인해주세요.");
+            }
+        );
+    } else {
+        alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
     }
 });
 
@@ -538,5 +550,35 @@ function showWeatherAdvice(data) {
         advicePopup.classList.add("show");
 
         // (선택 사항) 5초 뒤에 자동으로 사라지게 하려면 아래 주석 해제
-        // setTimeout(() => { advicePopup.classList.remove("show"); }, 5000);
+        setTimeout(() => { advicePopup.classList.remove("show"); }, 7000);
+}
+
+async function fetchWeatherDataByCoords(lat, lon) {
+    hideError();
+    
+    // API URL에 lat, lon 파라미터 사용
+    const currentWeatherUrl = `/api/weather?lat=${lat}&lon=${lon}&unit=${currentUnit}`;
+    const forecastUrl = `/api/forecast?lat=${lat}&lon=${lon}&unit=${currentUnit}`;
+
+    try {
+        // 1. 현재 날씨
+        const response = await fetch(currentWeatherUrl);
+        if (!response.ok) throw new Error("위치 기반 날씨를 가져올 수 없습니다.");
+        const data = await response.json();
+
+        displayWeather(data);
+        showWeatherAdvice(data);
+        
+        // 중요: 도시 이름을 currentCity에 업데이트 (그래야 단위 변환 등이 잘 됨)
+        currentCity = data.name; 
+        cityInput.value = ""; // 입력창 비우기
+
+        // 2. 5일 예보
+        const forecastResponse = await fetch(forecastUrl);
+        const forecastData = await forecastResponse.json();
+        displayForecast(forecastData.list);
+
+    } catch (error) {
+        handleError(error);
+    }
 }

@@ -450,3 +450,19 @@ footer {
 #close-advice-btn:hover {
     color: white;
 }
+
+#location-button {
+    padding: 12px 15px;
+    border: none;
+    background-color: #6c757d; /* 회색 계열 */
+    color: white;
+    cursor: pointer;
+    border-radius: 4px; /* 살짝 둥글게 */
+    font-size: 1.2rem;
+    margin-left: 5px; /* 검색 버튼과 살짝 띄우기 */
+    transition: background 0.3s;
+}
+
+#location-button:hover {
+    background-color: #5a6268;
+}
