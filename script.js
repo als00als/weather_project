@@ -611,11 +611,11 @@ async function fetchAirQuality(lat, lon) {
         let color = "";
 
         switch (aqi) {
-            case 1: aqiText = "좋음 🔵"; color = "blue"; break;
-            case 2: aqiText = "보통 🟢"; color = "green"; break;
-            case 3: aqiText = "주의 🟡"; color = "#d4a017"; break; // 진한 노랑
-            case 4: aqiText = "나쁨 🟠"; color = "orange"; break;
-            case 5: aqiText = "매우 나쁨 🔴"; color = "red"; break;
+            case 1: aqiText = "좋음"; color = "blue"; break;
+            case 2: aqiText = "보통"; color = "green"; break;
+            case 3: aqiText = "주의"; color = "#d4a017"; break; // 진한 노랑
+            case 4: aqiText = "나쁨"; color = "orange"; break;
+            case 5: aqiText = "매우 나쁨"; color = "red"; break;
             default: aqiText = "정보 없음"; color = "gray";
         }
 
