@@ -217,3 +217,47 @@ footer {
         padding: 20px;
     }
 }
+
+#diary-section {
+    text-align: center;
+}
+
+#diary-date {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+#diary-input {
+    width: 100%;
+    height: 120px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-family: inherit; /* 폰트 상속 */
+    font-size: 1rem;
+    resize: vertical; /* 세로 크기 조절만 허용 */
+}
+
+#diary-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+#save-diary-button {
+    padding: 10px 25px;
+    background-color: #28a745; /* 저장 버튼은 초록색 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+#save-diary-button:hover {
+    background-color: #218838;
+}

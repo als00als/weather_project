@@ -55,10 +55,17 @@ unitToggleButton.addEventListener("click", () => {
     }
 });
 
+saveDiaryButton.addEventListener("click", () => {
+    saveDiary();
+    alert("일기가 저장되었습니다!"); // 저장 확인 알림
+});
+
 // 페이지 로드 시 최근 검색어 불러오기
 document.addEventListener("DOMContentLoaded", () => {
     loadRecentSearches();
     renderRecentSearches();
+
+    loadDiary();
 });
 
 
@@ -328,4 +335,52 @@ function refineDescription(description) {
 
     // 사전에 있는 단어면 교체하고, 없으면 원래 단어 그대로 반환
     return dictionary[description] || description;
+}
+
+const diaryInput = document.querySelector("#diary-input");
+const saveDiaryButton = document.querySelector("#save-diary-button");
+const diaryDateElement = document.querySelector("#diary-date");
+
+/**
+ * 오늘의 날짜를 키(Key)로 사용하여 일기를 저장합니다.
+ */
+function saveDiary() {
+    const todayKey = getTodayKey(); // 오늘 날짜 키 생성 (예: diary-2023-10-25)
+    const content = diaryInput.value;
+    
+    // 내용이 있으면 저장, 비었으면 삭제
+    if (content.trim()) {
+        localStorage.setItem(todayKey, content);
+    } else {
+        localStorage.removeItem(todayKey);
+    }
+}
+
+/**
+ * 저장된 일기가 있다면 불러와서 화면에 보여줍니다.
+ */
+function loadDiary() {
+    const todayKey = getTodayKey();
+    const savedContent = localStorage.getItem(todayKey);
+    
+    // 날짜 표시
+    const today = new Date();
+    diaryDateElement.textContent = `${today.getMonth() + 1}월 ${today.getDate()}일의 기록`;
+
+    // 저장된 내용이 있으면 입력창에 채워넣기
+    if (savedContent) {
+        diaryInput.value = savedContent;
+    }
+}
+
+/**
+ * 오늘 날짜를 "diary-YYYY-MM-DD" 형태의 문자열로 반환하는 도우미 함수
+ * 날짜별로 일기를 따로 저장하기 위해 필요합니다.
+ */
+function getTodayKey() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `diary-${year}-${month}-${day}`;
 }
