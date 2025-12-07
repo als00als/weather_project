@@ -460,7 +460,7 @@ footer {
     color: white;
     cursor: pointer;
     border-radius: 4px; /* 살짝 둥글게 */
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin-left: 5px; /* 검색 버튼과 살짝 띄우기 */
     transition: background 0.3s;
 }
