@@ -141,7 +141,7 @@ function displayWeather(data) {
 
     currentCityElement.textContent = `현재 날씨 (${data.name})`;
     temperature.textContent = `${Math.round(data.main.temp)}${unitSymbol}`;
-    weatherDescription.textContent = data.weather[0].description;
+    weatherDescription.textContent = refineDescription(data.weather[0].description);
     humidity.textContent = data.main.humidity;
     windSpeed.textContent = data.wind.speed;
 
@@ -199,7 +199,7 @@ function displayForecast(forecastList) {
                 <img src="${iconPath}" alt="${forecast.weather[0].description}">
                 
                 <div class="temp">${temp}${unitSymbol}</div>
-                <div class="desc">${forecast.weather[0].description}</div>
+                <div class="desc">${refineDescription(forecast.weather[0].description)}</div>
             </div>
         `;
         forecastCardsContainer.innerHTML += cardHTML;
@@ -314,4 +314,17 @@ function getWeatherIconPath(weatherMain) {
             break;
     }
     return iconPath;
+}
+
+function refineDescription(description) {
+    const dictionary = {
+        "실 비": "가랑비",
+        "박무": "옅은 안개",
+        "온흐림": "흐림",
+        "튼구름": "구름 조금",  // (추천) 자주 나오는 어색한 표현 추가
+        "약한 비": "비 조금"    // (추천) 자주 나오는 어색한 표현 추가
+    };
+
+    // 사전에 있는 단어면 교체하고, 없으면 원래 단어 그대로 반환
+    return dictionary[description] || description;
 }
