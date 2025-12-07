@@ -129,9 +129,8 @@ main {
 }
 
 #weather-description {
-    font-size: 1.2rem;
-    margin-left: 20px;
-    text-transform: capitalize; /* 영어 설명 첫 글자 대문자 */
+    font-size: 1.1rem;
+    justify-content: center;
 }
 
 .additional-info {
@@ -399,3 +398,55 @@ footer {
     background-color: #dc3545; /* 삭제: 빨간색 */
 }
 .btn-delete:hover { background-color: #c82333; }
+
+.forecast-card-item .date {
+    font-weight: 900; /* 아주 굵게 */
+    font-size: 1.1rem; /* 글자 크기도 살짝 키움 */
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* [요청 2] 날씨 조언 팝업창 스타일 */
+#weather-advice-popup {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px); /* 처음엔 아래에 숨김 */
+    background-color: rgba(0, 0, 0, 0.85); /* 검은색 반투명 배경 */
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px; /* 둥근 알약 모양 */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    z-index: 2000; /* 다른 요소보다 위에 표시 */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    transition: all 0.5s ease-in-out; /* 부드럽게 올라오는 애니메이션 */
+    min-width: 300px;
+    justify-content: center;
+}
+
+#weather-advice-popup.show {
+    transform: translateX(-50%) translateY(0); /* 제자리로 올라옴 */
+    opacity: 1;
+}
+
+#advice-text {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* 팝업 닫기 버튼 */
+#close-advice-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+#close-advice-btn:hover {
+    color: white;
+}
